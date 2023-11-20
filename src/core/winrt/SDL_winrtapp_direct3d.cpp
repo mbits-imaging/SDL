@@ -593,8 +593,17 @@ void SDL_WinRTApp::OnWindowClosed(CoreWindow ^ sender, CoreWindowEventArgs ^ arg
     m_windowClosed = true;
 }
 
-void SDL_WinRTApp::OnAppActivated(CoreApplicationView ^ applicationView, IActivatedEventArgs ^ args)
+DECLSPEC std::wstring SDL_WinRTApp_launchUrl;
+
+void SDL_WinRTApp::OnAppActivated(CoreApplicationView^ applicationView, IActivatedEventArgs^ args)
 {
+    if (args->Kind == Windows::ApplicationModel::Activation::ActivationKind::Protocol)
+    {
+        Windows::ApplicationModel::Activation::ProtocolActivatedEventArgs^ eventArgs =
+        dynamic_cast<Windows::ApplicationModel::Activation::ProtocolActivatedEventArgs^>(args);
+        SDL_WinRTApp_launchUrl = eventArgs->Uri->RawUri->Data();
+    }
+
     CoreWindow::GetForCurrentThread()->Activate();
 }
 
